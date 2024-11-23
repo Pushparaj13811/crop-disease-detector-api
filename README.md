@@ -86,10 +86,10 @@ curl -X 'POST' \
 
 ```json
 {
-  "predicted_class": [30],
-  "probabilities": [
-    [0.00001, 0.00002, 0.00003, ..., 0.999]
-  ]
+  "predicted_class": "Corn_(maize)___Common_rust_",
+  "predicted_crop": "Corn_(maize)",
+  "predicted_diseases": "Common_rust_",
+  "confidence_percentage": 100
 }
 ```
 
