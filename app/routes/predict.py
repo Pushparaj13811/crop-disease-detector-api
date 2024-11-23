@@ -51,12 +51,25 @@ async def predict(file: UploadFile = File(...)):
         predicted_crop, predicted_disease = predicted_class.split("___")
 
         confidence = float(confidence)
+        
+        if predicted_disease == "healthy":
+            return{
+                "predicted_class": predicted_class,
+                "predicted_crop": predicted_crop,
+                "isHealthy": "Healthy",
+                "predicted_diseases": "Null",
+                "confidence_percentage": confidence              
+            }
+        else:
+            diseases = predicted_disease
+
 
         # Return the formatted response
         return {
             "predicted_class": predicted_class,
             "predicted_crop": predicted_crop,
-            "predicted_diseases": predicted_disease,
+            "isHealthy": "Unhealthy",
+            "predicted_diseases": diseases,
             "confidence_percentage": confidence
         }
 
