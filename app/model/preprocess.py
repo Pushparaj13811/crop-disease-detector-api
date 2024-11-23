@@ -1,34 +1,38 @@
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
-from tensorflow.keras.applications.resnet50 import preprocess_input
 import numpy as np
-from io import BytesIO
 from PIL import Image
+import io
 
-def preprocess_image(image: bytes):
+def preprocess_image(image):
     """
     Preprocess the uploaded image for model prediction.
     Args:
-        image (bytes): The uploaded image in bytes format.
+        image (file-like or str): The uploaded image in bytes or file path format.
     Returns:
         np.ndarray: Preprocessed image ready for model prediction.
     """
     try:
-        # Load image using PIL
-        pil_image = Image.open(BytesIO(image)).convert("RGB")
-        
-        # Resize image to 128x128 (required by your model)
-        pil_image = pil_image.resize((128, 128))
-        
+        # If the input is in bytes format (as received from frontend), convert it to a PIL image
+        if isinstance(image, bytes):
+            image = Image.open(io.BytesIO(image)).convert("RGB")
+        elif isinstance(image, str):  # If the input is a file path
+            image = Image.open(image).convert("RGB")
+        elif isinstance(image, Image.Image):  # If the input is already a PIL image
+            image = image.convert("RGB")
+        else:
+            raise ValueError("Input must be a file path, a PIL Image object, or bytes.")
+
+        # Resize image to (128, 128) as required by your model
+        image = image.resize((128, 128))
+
         # Convert image to array
-        image_array = img_to_array(pil_image)
-        
+        input_arr = img_to_array(image)
+
         # Add batch dimension (1, 128, 128, 3)
-        image_array = np.expand_dims(image_array, axis=0)
-        
-        # Preprocess the image (normalization, etc.)
-        image_array = preprocess_input(image_array)
-        
-        return image_array
+        input_arr = np.expand_dims(input_arr, axis=0)
+
+        return input_arr
+
     except Exception as e:
         print(f"Error preprocessing image: {e}")
         raise e
